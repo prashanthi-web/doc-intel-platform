@@ -10,9 +10,9 @@ as each phase completes.
 
 ## Quickstart (Phase 0)
 
-\`\`\`bash
+```bash
 cp .env.example .env
 docker compose up --build
-\`\`\`
+```
 
 Then check: `http://localhost:8000/health`
