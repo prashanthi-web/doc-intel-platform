@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./app:/code/app
+      - .:/code              # ← changed from "./app:/code/app"
     depends_on:
       mysql:
         condition: service_healthy
