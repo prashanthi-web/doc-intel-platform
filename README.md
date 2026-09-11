@@ -1,6 +1,6 @@
 # AI-Powered Document Intelligence Platform
 
-> Status: 🚧 In development — Phase 1 complete (Auth + Database)
+> Status: 🚧 In development — Phase 2 complete (Document Upload + Storage + Extraction)
 
 A production-style RAG platform for uploading documents (PDF/DOCX/TXT) and asking
 grounded, cited questions over them, built incrementally as a learning + portfolio project.
@@ -15,16 +15,22 @@ phases complete. This README currently reflects what's actually built and workin
 - **Vector DB**: Qdrant (added, not yet used — wired in from Phase 4 onward)
 - **Auth**: JWT (python-jose) + bcrypt password hashing (passlib)
 - **Deployment**: Docker + Docker Compose (api + mysql + qdrant, one command to run all three)
+- **Object Storage**: MinIO (S3-compatible), via boto3 — same code path as real AWS S3
 
 ## What's Implemented So Far
 
-- [x] Dockerized dev environment (FastAPI + MySQL + Qdrant, all networked together)
+- [x] Dockerized dev environment (FastAPI + MySQL + Qdrant + MinIO, all networked together)
 - [x] Centralized, env-driven configuration (`app/config.py`) — no hardcoded provider names or secrets
 - [x] Database schema for `users`, `documents`, `document_chunks`, `conversations`, `messages`, tracked via Alembic migrations
 - [x] User registration with bcrypt-hashed passwords (never stored in plaintext)
 - [x] JWT-based login and a protected route (`/auth/me`) proving the full auth round-trip
-- [ ] Document upload + text extraction *(Phase 2, in progress)*
-- [ ] Chunking, embeddings, retrieval, RAG generation *(Phases 3–7)*
+- [x] S3-compatible object storage (MinIO locally; swappable to real AWS S3 via config only)
+- [x] Document upload with validation (extension, size, magic-byte content check)
+- [x] Text extraction for PDF (per-page, via PyMuPDF), DOCX (via python-docx), and TXT
+- [x] Per-document processing status tracking (`pending` → `processing` → `ready`/`failed`)
+- [x] User-scoped document listing, retrieval, and deletion
+- [ ] Chunking strategy *(Phase 3, next)*
+- [ ] Embeddings, Qdrant storage, retrieval, RAG generation *(Phases 4–7)*
 - [ ] Evaluation suite, experiments *(Phases 13–15)*
 
 ## Project Structure
@@ -70,6 +76,10 @@ Check it's running:
 | POST | `/auth/register` | No | Create a new user (email + password) |
 | POST | `/auth/login` | No | Returns a JWT access token |
 | GET | `/auth/me` | Yes (Bearer token) | Returns the current authenticated user |
+| POST | `/documents/upload` | Yes | Upload a document (pdf/txt/docx), extract text, track status |
+| GET | `/documents` | Yes | List the current user's documents |
+| GET | `/documents/{id}` | Yes | Get a single document's detail/status |
+| DELETE | `/documents/{id}` | Yes | Delete a document and its stored file |
 
 ## Database Migrations
 
@@ -90,4 +100,4 @@ selection, chunking/retrieval config). Copy it to `.env` and fill in real values
 ## Roadmap
 
 Full architecture, tech choices, and phase-by-phase status: see [`PLANNING.md`](./PLANNING.md).
-Currently on **Phase 2: document upload and text extraction**.
+Currently on **Phase 3: chunking strategy**.

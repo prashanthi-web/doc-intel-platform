@@ -36,6 +36,13 @@ class Settings(BaseSettings):
     retrieval_top_k: int = 5
     reranking_enabled: bool = False
 
+        # --- Object Storage ---
+    s3_endpoint_url: str = "http://minio:9000"
+    s3_access_key: str = "docintel"
+    s3_secret_key: str = "docintel123"
+    s3_bucket_name: str = "documents"
+    s3_region: str = "us-east-1"
+
 
 @lru_cache
 def get_settings() -> Settings:

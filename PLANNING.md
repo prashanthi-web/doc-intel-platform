@@ -34,8 +34,8 @@ Qdrant LLM Provider (configurable)
 |---|---|---|
 | 0 | Docker Compose skeleton, config.py, health check | ✅ Done |
 | 1 | DB models, Alembic migrations, JWT auth (register/login/me) | ✅ Done |
-| 2 | Document upload + text extraction (pdf/docx/txt) + status tracking | 🔧 In progress |
-| 3 | Chunking strategy (configurable, sentence/page-aware) | ⬜ Not started |
+| 2 | Document upload + text extraction (pdf/docx/txt) + status tracking | ✅ Done |
+| 3 | Chunking strategy (configurable, sentence/page-aware) | 🔧 In progress |
 | 4 | Embeddings + Qdrant storage | ⬜ |
 | 5 | Semantic retrieval + `/search` endpoint | ⬜ |
 | 6 | LLM provider abstraction + RAG answer generation + prompt design | ⬜ |
@@ -78,11 +78,11 @@ POST /auth/register ✅
 POST /auth/login ✅
 GET /auth/me ✅
 
-POST /documents/upload 🔧 Phase 2
-GET /documents
-GET /documents/{id}
-DELETE /documents/{id}
-GET /documents/{id}/status
+POST   /documents/upload          ✅
+GET    /documents                 ✅
+GET    /documents/{id}            ✅
+DELETE /documents/{id}            ✅
+GET    /documents/{id}/status    (folded into GET /documents/{id})
 
 POST /chat Phase 6
 GET /conversations Phase 8
