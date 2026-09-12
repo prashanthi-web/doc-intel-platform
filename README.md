@@ -1,6 +1,6 @@
 # AI-Powered Document Intelligence Platform
 
-> Status: 🚧 In development — Phase 2 complete (Document Upload + Storage + Extraction)
+> Status: 🚧 In development — Phase 3 complete (Chunking)
 
 A production-style RAG platform for uploading documents (PDF/DOCX/TXT) and asking
 grounded, cited questions over them, built incrementally as a learning + portfolio project.
@@ -29,7 +29,8 @@ phases complete. This README currently reflects what's actually built and workin
 - [x] Text extraction for PDF (per-page, via PyMuPDF), DOCX (via python-docx), and TXT
 - [x] Per-document processing status tracking (`pending` → `processing` → `ready`/`failed`)
 - [x] User-scoped document listing, retrieval, and deletion
-- [ ] Chunking strategy *(Phase 3, next)*
+- [x] Configurable, sentence-aware, page-scoped chunking (chunk size/overlap via env vars)
+- [ ] Embeddings, Qdrant storage *(Phase 4, next)*
 - [ ] Embeddings, Qdrant storage, retrieval, RAG generation *(Phases 4–7)*
 - [ ] Evaluation suite, experiments *(Phases 13–15)*
 
@@ -80,6 +81,7 @@ Check it's running:
 | GET | `/documents` | Yes | List the current user's documents |
 | GET | `/documents/{id}` | Yes | Get a single document's detail/status |
 | DELETE | `/documents/{id}` | Yes | Delete a document and its stored file |
+| GET | `/documents/{id}/chunks` | Yes | Inspect the chunks generated for a document (debugging/verification) |
 
 ## Database Migrations
 
@@ -100,4 +102,4 @@ selection, chunking/retrieval config). Copy it to `.env` and fill in real values
 ## Roadmap
 
 Full architecture, tech choices, and phase-by-phase status: see [`PLANNING.md`](./PLANNING.md).
-Currently on **Phase 3: chunking strategy**.
+Currently on **Phase 4: embeddings + Qdrant storage**.

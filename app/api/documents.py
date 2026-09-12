@@ -7,6 +7,9 @@ from app.models.user import User
 from app.schemas.document import DocumentOut
 from app.services import document_service
 
+from app.repositories import chunk_repository
+from app.schemas.document import ChunkOut, DocumentOut
+
 router = APIRouter(prefix="/documents", tags=["documents"])
 
 
@@ -52,3 +55,16 @@ def delete_document(
     deleted = document_service.delete_document(db, current_user.id, document_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Document not found")
+
+
+
+@router.get("/{document_id}/chunks", response_model=list[ChunkOut])
+def get_document_chunks(
+    document_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    document = document_service.get_document(db, current_user.id, document_id)
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+    return chunk_repository.get_chunks_by_document(db, document_id)

@@ -35,8 +35,8 @@ Qdrant LLM Provider (configurable)
 | 0 | Docker Compose skeleton, config.py, health check | ✅ Done |
 | 1 | DB models, Alembic migrations, JWT auth (register/login/me) | ✅ Done |
 | 2 | Document upload + text extraction (pdf/docx/txt) + status tracking | ✅ Done |
-| 3 | Chunking strategy (configurable, sentence/page-aware) | 🔧 In progress |
-| 4 | Embeddings + Qdrant storage | ⬜ |
+| 3 | Chunking strategy (configurable, sentence/page-aware) | ✅ Done |
+| 4 | Embeddings + Qdrant storage | ⬜ |🔧 In progress |
 | 5 | Semantic retrieval + `/search` endpoint | ⬜ |
 | 6 | LLM provider abstraction + RAG answer generation + prompt design | ⬜ |
 | 7 | Source citations end-to-end | ⬜ |

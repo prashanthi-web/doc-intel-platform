@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import String, Integer, DateTime, ForeignKey, Text
+from sqlalchemy import String, Integer, DateTime, ForeignKey, Text, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
@@ -17,7 +17,8 @@ class DocumentChunk(Base):
     page_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     token_count: Mapped[int] = mapped_column(Integer, nullable=False)
-    embedding_model: Mapped[str] = mapped_column(String(100), nullable=False)
+    embedding_model: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    is_embedded: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
     document = relationship("Document", back_populates="chunks")

@@ -16,3 +16,14 @@ class DocumentOut(BaseModel):
 
     class Config:
         from_attributes = True
+        
+class ChunkOut(BaseModel):
+    id: str
+    chunk_index: int
+    page_number: int | None
+    content: str
+    token_count: int
+    is_embedded: bool
+
+    class Config:
+        from_attributes = True

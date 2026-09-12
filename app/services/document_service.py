@@ -4,17 +4,20 @@ from datetime import datetime, timezone
 from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
+from app.config import get_settings
 from app.models.document import Document
+from app.models.document_chunk import DocumentChunk
+from app.rag.chunking import chunk_document
 from app.rag.ingestion import DocumentProcessingError, extract_document_text, validate_file
-from app.repositories import document_repository
+from app.repositories import chunk_repository, document_repository
 from app.storage.s3_client import delete_object, upload_bytes
+
+settings = get_settings()
 
 
 async def upload_document(db: Session, user_id: str, file: UploadFile) -> Document:
     content = await file.read()
 
-    # Validation failures happen BEFORE we create any DB row or upload anything —
-    # a bad upload should leave zero trace.
     try:
         file_type = validate_file(file.filename, content)
     except DocumentProcessingError as e:
@@ -35,8 +38,6 @@ async def upload_document(db: Session, user_id: str, file: UploadFile) -> Docume
     document.status = "processing"
     document_repository.update_document(db, document)
 
-    # From here on, failures are "soft" — the file was valid enough to accept,
-    # so we record what went wrong on the row itself instead of rejecting the request.
     try:
         upload_bytes(
             document.storage_path,
@@ -44,6 +45,20 @@ async def upload_document(db: Session, user_id: str, file: UploadFile) -> Docume
             content_type=file.content_type or "application/octet-stream",
         )
         pages = extract_document_text(file_type, content)
+
+        chunks_data = chunk_document(pages, settings.chunk_size, settings.chunk_overlap)
+        chunk_rows = [
+            DocumentChunk(
+                id=str(uuid.uuid4()),
+                document_id=document.id,
+                chunk_index=c["chunk_index"],
+                page_number=c["page_number"],
+                content=c["content"],
+                token_count=c["token_count"],
+            )
+            for c in chunks_data
+        ]
+        chunk_repository.create_chunks(db, chunk_rows)
 
         document.page_count = len(pages) if file_type == "pdf" else None
         document.status = "ready"
@@ -74,6 +89,6 @@ def delete_document(db: Session, user_id: str, document_id: str) -> bool:
     try:
         delete_object(document.storage_path)
     except Exception:
-        pass  # if it's already gone from S3, still allow removing the DB row
+        pass
     document_repository.delete_document(db, document)
     return True
