@@ -12,7 +12,7 @@ phases complete. This README currently reflects what's actually built and workin
 
 - **Backend**: FastAPI (Python)
 - **Database**: MySQL 8, accessed via SQLAlchemy ORM, schema versioned with Alembic
-- **Vector DB**: Qdrant (added, not yet used — wired in from Phase 4 onward)
+- **Vector DB**: Qdrant — stores chunk embeddings with metadata payload (document_id, user_id, page_number) for filtered semantic search
 - **Auth**: JWT (python-jose) + bcrypt password hashing (passlib)
 - **Deployment**: Docker + Docker Compose (api + mysql + qdrant, one command to run all three)
 - **Object Storage**: MinIO (S3-compatible), via boto3 — same code path as real AWS S3
@@ -35,24 +35,37 @@ phases complete. This README currently reflects what's actually built and workin
 - [x] Chunks embedded and stored in Qdrant with metadata payload (document_id, user_id, page_number)
 - [x] Vector cleanup on document deletion (no orphaned embeddings)
 - [ ] Semantic retrieval + `/search` endpoint *(Phase 5, next)*
-- [ ] Embeddings, Qdrant storage, retrieval, RAG generation *(Phases 4–7)*
 - [ ] Evaluation suite, experiments *(Phases 13–15)*
 
 ## Project Structure
+
+\`\`\`
 app/
-├── main.py # FastAPI app + router registration
-├── config.py # All environment variables, one place
+├── main.py              # FastAPI app + router registration
+├── config.py             # All environment variables, one place
 ├── api/
-│ └── auth.py # /auth/register, /auth/login, /auth/me
+│   ├── auth.py           # /auth/register, /auth/login, /auth/me
+│   └── documents.py      # /documents/upload, list, get, delete, chunks
 ├── auth/
-│ ├── security.py # password hashing, JWT create/decode
-│ └── dependencies.py # get_current_user (protects routes)
+│   ├── security.py       # password hashing, JWT create/decode
+│   └── dependencies.py   # get_current_user (protects routes)
 ├── database/
-│ ├── base.py # SQLAlchemy declarative Base
-│ └── session.py # engine, SessionLocal, get_db dependency
-├── models/ # SQLAlchemy ORM models (users, documents, etc.)
-└── schemas/ # Pydantic request/response models
-alembic/ # Migration scripts (versioned schema history)
+│   ├── base.py            # SQLAlchemy declarative Base
+│   ├── session.py         # engine, SessionLocal, get_db dependency
+│   └── vector_store.py    # Qdrant client wrapper (upsert/delete/search)
+├── models/                # SQLAlchemy ORM models
+├── schemas/               # Pydantic request/response models
+├── repositories/          # DB access only (documents, chunks)
+├── services/              # business logic orchestration (document_service)
+├── rag/
+│   ├── ingestion.py        # text extraction (pdf/docx/txt)
+│   ├── chunking.py         # sentence-aware, page-scoped chunking
+│   └── embeddings.py       # configurable embedding provider (local/OpenAI)
+└── storage/
+    └── s3_client.py        # MinIO/S3 wrapper (upload/download/delete)
+alembic/                    # Migration scripts (versioned schema history)
+\`\`\`
+
 
 
 ## Running Locally

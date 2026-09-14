@@ -36,8 +36,8 @@ Qdrant LLM Provider (configurable)
 | 1 | DB models, Alembic migrations, JWT auth (register/login/me) | ✅ Done |
 | 2 | Document upload + text extraction (pdf/docx/txt) + status tracking | ✅ Done |
 | 3 | Chunking strategy (configurable, sentence/page-aware) | ✅ Done |
-| 4 | Embeddings + Qdrant storage | ⬜ |✅ Done |
-| 5 | Semantic retrieval + `/search` endpoint | ⬜ |🔧 In progress | 
+| 4 | Embeddings + Qdrant storage | ✅ Done |
+| 5 | Semantic retrieval + `/search` endpoint | 🔧 In progress |
 | 6 | LLM provider abstraction + RAG answer generation + prompt design | ⬜ |
 | 7 | Source citations end-to-end | ⬜ |
 | 8 | Chat system: conversations, multi-turn history strategy | ⬜ |
