@@ -1,6 +1,6 @@
 # AI-Powered Document Intelligence Platform
 
-> Status: 🚧 In development — Phase 3 complete (Chunking)
+> Status: 🚧 In development — Phase 4 complete (Embeddings + Vector Storage)
 
 A production-style RAG platform for uploading documents (PDF/DOCX/TXT) and asking
 grounded, cited questions over them, built incrementally as a learning + portfolio project.
@@ -16,6 +16,7 @@ phases complete. This README currently reflects what's actually built and workin
 - **Auth**: JWT (python-jose) + bcrypt password hashing (passlib)
 - **Deployment**: Docker + Docker Compose (api + mysql + qdrant, one command to run all three)
 - **Object Storage**: MinIO (S3-compatible), via boto3 — same code path as real AWS S3
+- **Embeddings**: sentence-transformers (local, CPU) by default; OpenAI swappable via `EMBEDDING_PROVIDER` env var
 
 ## What's Implemented So Far
 
@@ -30,7 +31,10 @@ phases complete. This README currently reflects what's actually built and workin
 - [x] Per-document processing status tracking (`pending` → `processing` → `ready`/`failed`)
 - [x] User-scoped document listing, retrieval, and deletion
 - [x] Configurable, sentence-aware, page-scoped chunking (chunk size/overlap via env vars)
-- [ ] Embeddings, Qdrant storage *(Phase 4, next)*
+- [x] Configurable embedding provider (local sentence-transformers by default, OpenAI swappable via env var)
+- [x] Chunks embedded and stored in Qdrant with metadata payload (document_id, user_id, page_number)
+- [x] Vector cleanup on document deletion (no orphaned embeddings)
+- [ ] Semantic retrieval + `/search` endpoint *(Phase 5, next)*
 - [ ] Embeddings, Qdrant storage, retrieval, RAG generation *(Phases 4–7)*
 - [ ] Evaluation suite, experiments *(Phases 13–15)*
 
@@ -102,4 +106,5 @@ selection, chunking/retrieval config). Copy it to `.env` and fill in real values
 ## Roadmap
 
 Full architecture, tech choices, and phase-by-phase status: see [`PLANNING.md`](./PLANNING.md).
-Currently on **Phase 4: embeddings + Qdrant storage**.
+
+Currently on **Phase 5: semantic retrieval**.

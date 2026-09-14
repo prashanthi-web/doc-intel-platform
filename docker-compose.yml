@@ -8,6 +8,7 @@ services:
       - .env
     volumes:
       - .:/code              # ← changed from "./app:/code/app"
+      - hf_cache:/root/.cache/huggingface
     depends_on:
       mysql:
         condition: service_healthy
@@ -64,3 +65,4 @@ volumes:
   mysql_data:
   qdrant_storage:
   minio_data:
+  hf_cache:

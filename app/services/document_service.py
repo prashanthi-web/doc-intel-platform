@@ -5,9 +5,11 @@ from fastapi import UploadFile
 from sqlalchemy.orm import Session
 
 from app.config import get_settings
+from app.database.vector_store import ensure_collection_exists, upsert_chunks, delete_points_by_document
 from app.models.document import Document
 from app.models.document_chunk import DocumentChunk
 from app.rag.chunking import chunk_document
+from app.rag.embeddings import get_embedding_provider
 from app.rag.ingestion import DocumentProcessingError, extract_document_text, validate_file
 from app.repositories import chunk_repository, document_repository
 from app.storage.s3_client import delete_object, upload_bytes
@@ -60,6 +62,35 @@ async def upload_document(db: Session, user_id: str, file: UploadFile) -> Docume
         ]
         chunk_repository.create_chunks(db, chunk_rows)
 
+        # --- Embedding generation (new in Phase 4) ---
+        provider = get_embedding_provider()
+        ensure_collection_exists(provider.dimension)
+
+        texts = [c.content for c in chunk_rows]
+        vectors = provider.embed_texts(texts)
+
+        points = [
+            {
+                "id": chunk.id,
+                "vector": vector,
+                "payload": {
+                    "document_id": document.id,
+                    "user_id": user_id,
+                    "filename": document.filename,
+                    "page_number": chunk.page_number,
+                    "chunk_index": chunk.chunk_index,
+                },
+            }
+            for chunk, vector in zip(chunk_rows, vectors)
+        ]
+        upsert_chunks(points)
+
+        for chunk in chunk_rows:
+            chunk.is_embedded = True
+            chunk.embedding_model = provider.model_name
+        db.commit()
+        # --- end embedding generation ---
+
         document.page_count = len(pages) if file_type == "pdf" else None
         document.status = "ready"
         document.processed_at = datetime.now(timezone.utc)
@@ -90,5 +121,6 @@ def delete_document(db: Session, user_id: str, document_id: str) -> bool:
         delete_object(document.storage_path)
     except Exception:
         pass
+    delete_points_by_document(document.id)  # keep Qdrant in sync — no orphaned vectors
     document_repository.delete_document(db, document)
     return True
