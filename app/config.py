@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     chunk_size: int = 512
     chunk_overlap: int = 64
     retrieval_top_k: int = 5
+    similarity_score_threshold: float | None = None
     reranking_enabled: bool = False
 
     # --- Object Storage ---
