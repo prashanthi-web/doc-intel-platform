@@ -37,8 +37,8 @@ Qdrant LLM Provider (configurable)
 | 2 | Document upload + text extraction (pdf/docx/txt) + status tracking | ✅ Done |
 | 3 | Chunking strategy (configurable, sentence/page-aware) | ✅ Done |
 | 4 | Embeddings + Qdrant storage | ✅ Done |
-| 5 | Semantic retrieval + `/search` endpoint | 🔧 In progress |
-| 6 | LLM provider abstraction + RAG answer generation + prompt design | ⬜ |
+| 5 | Semantic retrieval + `/search` endpoint | ✅ Done |
+| 6 | LLM provider abstraction + RAG answer generation + prompt design | 🔧 In progress |
 | 7 | Source citations end-to-end | ⬜ |
 | 8 | Chat system: conversations, multi-turn history strategy | ⬜ |
 | 9 | Multi-document selection & retrieval | ⬜ |
@@ -90,7 +90,7 @@ POST /conversations
 GET /conversations/{id}
 DELETE /conversations/{id}
 
-POST /search Phase 5
+POST /search                       ✅
 
 POST /evaluation/run Phase 13
 GET /evaluation/results

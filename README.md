@@ -1,6 +1,6 @@
 # AI-Powered Document Intelligence Platform
 
-> Status: 🚧 In development — Phase 4 complete (Embeddings + Vector Storage)
+> Status: 🚧 In development — Phase 5 complete (Semantic Retrieval)
 
 A production-style RAG platform for uploading documents (PDF/DOCX/TXT) and asking
 grounded, cited questions over them, built incrementally as a learning + portfolio project.
@@ -34,7 +34,8 @@ phases complete. This README currently reflects what's actually built and workin
 - [x] Configurable embedding provider (local sentence-transformers by default, OpenAI swappable via env var)
 - [x] Chunks embedded and stored in Qdrant with metadata payload (document_id, user_id, page_number)
 - [x] Vector cleanup on document deletion (no orphaned embeddings)
-- [ ] Semantic retrieval + `/search` endpoint *(Phase 5, next)*
+- [x] Semantic retrieval via `/search` — configurable top-k and similarity threshold, scoped by user and optionally by document
+- [ ] LLM-generated answers with citations *(Phase 6, next)*
 - [ ] Evaluation suite, experiments *(Phases 13–15)*
 
 ## Project Structure
@@ -99,6 +100,7 @@ Check it's running:
 | GET | `/documents/{id}` | Yes | Get a single document's detail/status |
 | DELETE | `/documents/{id}` | Yes | Delete a document and its stored file |
 | GET | `/documents/{id}/chunks` | Yes | Inspect the chunks generated for a document (debugging/verification) |
+| POST | `/search` | Yes | Semantic search over your documents — returns ranked chunks with similarity scores and citations |
 
 ## Database Migrations
 
@@ -120,4 +122,4 @@ selection, chunking/retrieval config). Copy it to `.env` and fill in real values
 
 Full architecture, tech choices, and phase-by-phase status: see [`PLANNING.md`](./PLANNING.md).
 
-Currently on **Phase 5: semantic retrieval**.
+Currently on **Phase 6: LLM provider abstraction + RAG answer generation**.
